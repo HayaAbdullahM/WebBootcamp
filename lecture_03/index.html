@@ -34,3 +34,59 @@
 </body>
 
 </html>
+
+    
+function getCity(){
+    city= document.getElementById('cities').value
+    getPrayerTime()
+}
+
+let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+function getPrayerTime(){
+    let date= new Date();
+    let dayName= days[date.getDay()]
+    
+
+    
+    
+    let getCity= document.getElementById('cities').value
+    let city= getCity=='none'? 'Jeddah' : getCity
+
+    document.getElementById('city').innerHTML= city;
+    let params= {
+        country: "Saudi Arabia",
+        city: city,
+    }
+
+
+    return new Promise((resolve, reject)=>{
+        // axios.get(`http://api.aladhan.com/v1/calendarByCity?city=${city}&country=${country}&month=${month}&year=${year}`)
+        axios.get('https://api.aladhan.com/v1/timingsByCity',{
+            params: params
+        })
+        .then((response)=>{
+            let data= response.data.data
+            document.getElementById('date').innerHTML= `${dayName} ${data.date.readable} `
+
+            fillTimeForPrayer('fajr',data.timings.Fajr)
+            fillTimeForPrayer('sunrise',data.timings.Sunrise)
+            fillTimeForPrayer('dhuhr',data.timings.Dhuhr)
+            fillTimeForPrayer('asr',data.timings.Asr)
+            fillTimeForPrayer('maghrib',data.timings.Maghrib)
+            fillTimeForPrayer('isha',data.timings.Isha)
+
+            resolve()
+        })
+        .catch(function (error) {
+            console.log(error)
+        })
+    })
+}
+
+function fillTimeForPrayer(id, time){
+    document.getElementById(id).innerHTML= time
+
+}
+getPrayerTime()
+
+
